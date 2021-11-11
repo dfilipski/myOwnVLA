@@ -6,7 +6,6 @@ typedef struct int_vla {
     int* start;
     int* end;
     size_t maxLength;
-    size_t length;
     bool isAllocated; 
 } INT_VLA;
 
@@ -14,16 +13,13 @@ typedef struct int_vla {
  * Initialize a struct int_vla
  */
 void  makeIntegerVLA(INT_VLA* vla) {
-    
     vla->start = malloc(vla->maxLength);
     vla->end = vla->start;
     vla->isAllocated = true;
-
-    return ;
 }
 
 /**
- * Deallcoate a vla
+ * Deallocate a vla
  * @vla A pointer to a struct int_vla
  * @return true if the memory is deallocated.
  */
@@ -64,8 +60,23 @@ int getFromVLA(INT_VLA* vla, int i) {
 
 int main (void) {
 
+	const int len = 4;
+	int arr[len] = {1,2,3,4};
+
     INT_VLA* v;
 
     makeIntegerVLA(v);
+
+	/*Test adding numbers*/
+	for (int i = 0; i < len; i++)
+	{
+		addIntToVLA(v, arr[i]);
+	}
+
+	/*Test getting Numbers*/
+	for (int i = 0; i < len; i++) {
+		printf("%d: %d\n", i, getFromVLA(v, i));
+	}
+
     return 0;
 }

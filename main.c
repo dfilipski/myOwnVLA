@@ -9,11 +9,15 @@ typedef struct int_vla {
     bool isAllocated; 
 } INT_VLA;
 
+
+/*Should I do it this way? or should I create the struct when I create the VLA?
+ * Make it work first.*/
+
 /**
  * Initialize a struct int_vla
  */
 void  makeIntegerVLA(INT_VLA* vla) {
-    vla->start = malloc(vla->maxLength);
+    vla->start = malloc((vla->maxLength));
     vla->end = vla->start;
     vla->isAllocated = true;
 }
@@ -74,9 +78,9 @@ int main (void) {
 	}
 
 	/*Test getting Numbers*/
-	for (int i = 0; i < len; i++) {
-		printf("%d: %d\n", i, getFromVLA(v, i));
-	}
+//	for (int i = 0; i < len; i++) {
+//		printf("%d: %d\n", i, getFromVLA(v, i));
+//	}
 
     return 0;
 }

@@ -5,7 +5,8 @@
 typedef struct int_vla {
     int* start;
     int* end;
-    size_t maxLength;
+    size_t length;
+    size_t lastAddedIndex; 
     bool isAllocated; 
 } INT_VLA;
 
@@ -16,10 +17,12 @@ typedef struct int_vla {
 /**
  * Initialize a struct int_vla
  */
-void  makeIntegerVLA(INT_VLA* vla) {
-    vla->start = malloc((vla->maxLength));
-    vla->end = vla->start;
+void  makeIntegerVLA(INT_VLA* vla, size_t length) {
+    vla->start = (int*) calloc(length, sizeof(int));
+    vla->end = vla->start + 1;
     vla->isAllocated = true;
+    vla->length = 1;
+    vla->lastAddedIndex = -1;/*This way. when adding first index we get 1*/
 }
 
 /**
@@ -44,17 +47,16 @@ bool deallocateVLA(INT_VLA* vla) {
  * Add item to array. Return index if successful. Return -1 otherwise.
  */
 size_t addIntToVLA(INT_VLA* vla, int num) {
-    size_t length = (int) (vla->end - vla->start)/sizeof(int);
 
-    /*If there is no more room for elements add no more elements*/
-    if (length == vla->maxLength)
-        return -1;
+    if (vla->lastAddedIndex+1 > vla->length) {
+        /*Must grow the array yepee!! */
+        vla->start = (int*) realloc(vla->start, vla->length+1*sizeof(int));
+    }
 
-    /*We are safe to add an element*/
-    vla->end += sizeof(int);
-    vla->end[0] = num;
+    vla->start[vla->lastAddedIndex+1] = num;
+    vla->lastAddedIndex += 1;
     
-    return length+1; //
+    return vla->lastAddedIndex;
 }
 
 /*Return the ith element of vla*/
@@ -64,23 +66,25 @@ int getFromVLA(INT_VLA* vla, int i) {
 
 int main (void) {
 
-	const int len = 4;
-	int arr[len] = {1,2,3,4};
+	int len = 4;
 
-    INT_VLA* v;
+    INT_VLA v;
 
-    makeIntegerVLA(v);
+    makeIntegerVLA(&v, 1);
 
 	/*Test adding numbers*/
 	for (int i = 0; i < len; i++)
 	{
-		addIntToVLA(v, arr[i]);
+		addIntToVLA(&v, i%4);
+        printf("Added %dth 4 to vla\n", i);
 	}
 
 	/*Test getting Numbers*/
-//	for (int i = 0; i < len; i++) {
-//		printf("%d: %d\n", i, getFromVLA(v, i));
-//	}
+    for (int i = 0; i < len; i++) {
+  	    printf("%d: %d\n", i, v.start[i]);
+  	}
+
+    deallocateVLA(&v);
 
     return 0;
 }

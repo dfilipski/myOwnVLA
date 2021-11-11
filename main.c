@@ -10,8 +10,6 @@ typedef struct int_vla {
     bool isAllocated; 
 } INT_VLA;
 
-int vla[1024];
-
 /**
  * Initialize a struct int_vla
  */
@@ -20,7 +18,6 @@ void  makeIntegerVLA(INT_VLA* vla) {
     vla->start = malloc(vla->maxLength);
     vla->end = vla->start;
     vla->isAllocated = true;
-    vla->length=0;
 
     return ;
 }
@@ -46,14 +43,29 @@ bool deallocateVLA(INT_VLA* vla) {
 /**
  * Add item to array. Return index if successful. Return -1 otherwise.
  */
-size_t addIntToVLA(INT_VLA* vla) {
+size_t addIntToVLA(INT_VLA* vla, int num) {
+    size_t length = (int) (vla->end - vla->start)/sizeof(int);
 
+    /*If there is no more room for elements add no more elements*/
+    if (length == vla->maxLength)
+        return -1;
+
+    /*We are safe to add an element*/
+    vla->end += sizeof(int);
+    vla->end[0] = num;
+    
+    return length+1; //
+}
+
+/*Return the ith element of vla*/
+int getFromVLA(INT_VLA* vla, int i) {
+    return vla->start[i];
 }
 
 int main (void) {
 
-    INT_VLA v;
+    INT_VLA* v;
 
-    makeIntegerVLA(&v);
+    makeIntegerVLA(v);
     return 0;
 }
